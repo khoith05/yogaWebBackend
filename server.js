@@ -56,6 +56,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/test', userRouter)
 
 // set port, listen for requests
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`)
