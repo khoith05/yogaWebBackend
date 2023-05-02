@@ -2,8 +2,9 @@ const express = require('express')
 const cors = require('cors')
 const cookieSession = require('cookie-session')
 
-const dbConfig = require('./app/config/db.config')
-const authRouter = require('./app/routes/auth.routes')
+const dbConfig = require('./src/config/db.config')
+const authRouter = require('./src/routes/auth.routes')
+const userRouter = require('./src/routes/user.routes')
 
 const app = express()
 
@@ -27,7 +28,7 @@ app.use(
   })
 )
 
-const db = require('./app/models')
+const db = require('./src/models')
 
 db.mongoose
   .connect(`${dbConfig.url}/${dbConfig.DB}`, {
@@ -52,6 +53,7 @@ app.use(function (req, res, next) {
   next()
 })
 app.use('/api/auth', authRouter)
+app.use('/api/test', userRouter)
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080
