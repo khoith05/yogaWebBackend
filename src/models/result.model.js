@@ -9,6 +9,6 @@ const resultSchema = new mongoose.Schema(
   { timestamps: { createdAt: 'created' } }
 )
 
-const Result = mongoose.model('User', resultSchema)
+const Result = mongoose.model('Result', resultSchema)
 
 module.exports = Result

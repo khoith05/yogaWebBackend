@@ -16,6 +16,6 @@ const poseSchema = new mongoose.Schema({
   imageUrl: { type: String, require: true },
 })
 
-const Pose = mongoose.model('User', poseSchema)
+const Pose = mongoose.model('Pose', poseSchema)
 
 module.exports = Pose

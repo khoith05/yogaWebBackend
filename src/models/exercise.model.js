@@ -7,6 +7,6 @@ const exerciseSchema = new mongoose.Schema({
   duration: Number,
 })
 
-const Exercise = mongoose.model('User', exerciseSchema)
+const Exercise = mongoose.model('Exercise', exerciseSchema)
 
 module.exports = Exercise
