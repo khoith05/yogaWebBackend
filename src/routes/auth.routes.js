@@ -7,11 +7,11 @@ const router = express.Router()
 router.post(
   '/signup',
   [verifySignUp.checkDuplicateUsernameOrEmail],
-  controller.signup
+  controller.signUp
 )
 
-router.post('/signin', controller.signin)
+router.post('/signin', controller.signIn)
 
-router.post('/signout', controller.signout)
+router.post('/signout', controller.signOut)
 
 module.exports = router

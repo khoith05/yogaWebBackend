@@ -11,6 +11,7 @@ const poseSchema = new mongoose.Schema({
   H: Number,
   I: Number,
   J: Number,
+  duration: Number,
   videoUrl: { type: String, require: true },
   imageUrl: { type: String, require: true },
 })

@@ -1,18 +1,21 @@
 const express = require('express')
 const cors = require('cors')
 const cookieSession = require('cookie-session')
+const mongoose = require('mongoose')
 
 const dbConfig = require('./src/config/db.config')
 const authRouter = require('./src/routes/auth.routes')
 const userRouter = require('./src/routes/user.routes')
+const exerciseRouter = require('./src/routes/exercise.routes')
+const resultRouter = require('./src/routes/result.routes')
 
 const app = express()
 
-var corsOptions = {
-  origin: 'http://localhost:8081',
-}
+// var corsOptions = {
+//   origin: 'http://localhost:8081',
+// }
 
-app.use(cors(corsOptions))
+app.use(cors())
 
 // parse requests of content-type - application/json
 app.use(express.json())
@@ -28,13 +31,8 @@ app.use(
   })
 )
 
-const db = require('./src/models')
-
-db.mongoose
-  .connect(`${dbConfig.url}/${dbConfig.DB}`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+mongoose
+  .connect(`${dbConfig.url}/${dbConfig.DB}`)
   .then(() => {
     console.log('Successfully connect to MongoDB.')
   })
@@ -44,7 +42,7 @@ db.mongoose
 
 // simple route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to bezkoder application.' })
+  res.json({ message: 'Welcome to yoga application.' })
 })
 
 // routes
@@ -54,6 +52,8 @@ app.use(function (req, res, next) {
 })
 app.use('/api/auth', authRouter)
 app.use('/api/test', userRouter)
+app.use('/api/exercise', exerciseRouter)
+app.use('/api/result', resultRouter)
 
 // set port, listen for requests
 // eslint-disable-next-line no-undef

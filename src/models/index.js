@@ -1,12 +1,6 @@
-const mongoose = require('mongoose')
-mongoose.Promise = global.Promise
+const User = require('./user.model')
+const Exercise = require('./exercise.model')
+const Pose = require('./pose.model')
+const Result = require('./result.model')
 
-const db = {}
-
-db.mongoose = mongoose
-
-db.user = require('./user.model')
-
-db.ROLES = ['user', 'admin', 'moderator']
-
-module.exports = db
+module.exports = { User, Exercise, Pose, Result }
