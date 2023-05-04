@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const cookieSession = require('cookie-session')
+const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 
 const dbConfig = require('./src/config/db.config')
@@ -50,6 +51,7 @@ app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept')
   next()
 })
+app.use(bodyParser.json())
 app.use('/api/auth', authRouter)
 app.use('/api/test', userRouter)
 app.use('/api/exercise', exerciseRouter)
