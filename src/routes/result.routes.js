@@ -7,4 +7,6 @@ const router = express.Router()
 
 router.get('/all', [authJwt.verifyToken], controller.getAllResult)
 
+router.post('/add', [authJwt.verifyToken], controller.addResult)
+
 module.exports = router
