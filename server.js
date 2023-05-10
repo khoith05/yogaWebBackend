@@ -12,11 +12,12 @@ const resultRouter = require('./src/routes/result.routes')
 
 const app = express()
 
-// var corsOptions = {
-//   origin: 'http://localhost:8081',
-// }
-
-app.use(cors())
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+)
 
 // parse requests of content-type - application/json
 app.use(express.json())
@@ -42,16 +43,19 @@ mongoose
   })
 
 // simple route
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to yoga application.' })
-})
 
 // routes
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
   next()
 })
 app.use(bodyParser.json())
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to yoga application.' })
+})
 app.use('/api/auth', authRouter)
 app.use('/api/test', userRouter)
 app.use('/api/exercise', exerciseRouter)
