@@ -15,6 +15,13 @@ async function signUp(req, res) {
     const newUser = await user.save()
     if (newUser) {
       const { username, email } = newUser
+
+      const token = jwt.sign({ id: user.id }, config.secret, {
+        expiresIn: 60 * 60 * 24 * 7, // 24 hours
+      })
+
+      req.session.token = token
+
       return res.status(200).send({ data: { username, email } })
     }
     throw 'Some thing went wrong'
