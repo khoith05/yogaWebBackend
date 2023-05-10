@@ -26,7 +26,7 @@ async function signUp(req, res) {
 async function signIn(req, res) {
   try {
     const user = await User.findOne({
-      username: req.body.username,
+      email: req.body.email,
     }).exec()
 
     if (!user) {
