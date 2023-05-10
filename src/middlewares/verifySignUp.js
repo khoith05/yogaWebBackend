@@ -1,38 +1,32 @@
-const db = require('../models')
-const User = db.user
+const { User } = require('../models')
 
-const checkDuplicateUsernameOrEmail = (req, res, next) => {
+async function checkDuplicateUsernameOrEmail(req, res, next) {
+  console.log(req.body)
   // Username
-  User.findOne({
-    username: req.body.username,
-  }).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err })
-      return
-    }
-
+  try {
+    let user = await User.findOne({
+      username: req.body.username,
+    }).exec()
     if (user) {
-      res.status(400).send({ message: 'Failed! Username is already in use!' })
-      return
+      return res
+        .status(400)
+        .send({ message: 'Failed! Username is already in use!' })
     }
 
     // Email
-    User.findOne({
+    user = await User.findOne({
       email: req.body.email,
-    }).exec((err, user) => {
-      if (err) {
-        res.status(500).send({ message: err })
-        return
-      }
+    }).exec()
+    if (user) {
+      return res
+        .status(400)
+        .send({ message: 'Failed! Email is already in use!' })
+    }
 
-      if (user) {
-        res.status(400).send({ message: 'Failed! Email is already in use!' })
-        return
-      }
-
-      next()
-    })
-  })
+    next()
+  } catch (err) {
+    return res.status(400).send({ message: 'Something go wrong' })
+  }
 }
 
 const verifySignUp = {

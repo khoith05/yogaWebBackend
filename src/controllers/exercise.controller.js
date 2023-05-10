@@ -38,9 +38,15 @@ async function getExercise(req, res) {
 
 async function getAllExercise(req, res) {
   try {
-    const { level = 0 } = req.query
+    const { level } = req.query
 
-    const exercises = await Exercise.find({ level })
+    let exercises
+
+    if (level !== 0 && !level) {
+      exercises = await Exercise.find().exec()
+    } else {
+      exercises = await Exercise.find({ level }).exec()
+    }
 
     return res.status(200).send({ data: exercises })
   } catch {
@@ -48,28 +54,28 @@ async function getAllExercise(req, res) {
   }
 }
 
-// exports.addExercise = async (req, res) => {
-//   try {
-//     const exercises = req.body
+const addExercise = async (req, res) => {
+  try {
+    const exercises = req.body
 
-//     const newExercises = await Exercise.insertMany(exercises)
+    const newExercises = await Exercise.insertMany(exercises)
 
-//     return res.status(200).send({ message: 'success', data: newExercises })
-//   } catch {
-//     return res.status(400).send({ message: 'Something go wrong' })
-//   }
-// }
+    return res.status(200).send({ message: 'success', data: newExercises })
+  } catch {
+    return res.status(400).send({ message: 'Something go wrong' })
+  }
+}
 
-// exports.addPose = async (req, res) => {
-//   try {
-//     const poses = req.body
+const addPose = async (req, res) => {
+  try {
+    const poses = req.body
 
-//     const newPoses = await Pose.insertMany(poses)
+    const newPoses = await Pose.insertMany(poses)
 
-//     return res.status(200).send({ message: 'success', data: newPoses })
-//   } catch {
-//     return res.status(400).send({ message: 'Something go wrong' })
-//   }
-// }
+    return res.status(200).send({ message: 'success', data: newPoses })
+  } catch {
+    return res.status(400).send({ message: 'Something go wrong' })
+  }
+}
 
-module.exports = { getAllExercise, getExercise }
+module.exports = { getAllExercise, getExercise, addExercise, addPose }

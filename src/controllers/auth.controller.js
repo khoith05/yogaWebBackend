@@ -4,94 +4,58 @@ const { User } = require('../models')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 
-function signUp(req, res) {
-  const user = new User({
-    username: req.body.username,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8),
-  })
+async function signUp(req, res) {
+  try {
+    const user = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.password, 8),
+    })
 
-  user.save((err) => {
-    if (err) {
-      res.status(500).send({ message: err })
-      return
+    const newUser = await user.save()
+    if (newUser) {
+      const { username, email } = newUser
+      return res.status(200).send({ data: { username, email } })
     }
-
-    res.send({ message: 'User was registered successfully!' })
-    // if (req.body.roles) {
-    //   Role.find(
-    //     {
-    //       name: { $in: req.body.roles },
-    //     },
-    //     (err, roles) => {
-    //       if (err) {
-    //         res.status(500).send({ message: err });
-    //         return;
-    //       }
-
-    //       user.roles = roles.map((role) => role._id);
-    //       user.save((err) => {
-    //         if (err) {
-    //           res.status(500).send({ message: err });
-    //           return;
-    //         }
-
-    //         res.send({ message: "User was registered successfully!" });
-    //       });
-    //     }
-    //   );
-    // } else {
-    //   Role.findOne({ name: "user" }, (err, role) => {
-    //     if (err) {
-    //       res.status(500).send({ message: err });
-    //       return;
-    //     }
-
-    //     user.roles = [role._id];
-    //     user.save((err) => {
-    //       if (err) {
-    //         res.status(500).send({ message: err });
-    //         return;
-    //       }
-
-    //       res.send({ message: "User was registered successfully!" });
-    //     });
-    //   });
-    // }
-  })
+    throw 'Some thing went wrong'
+  } catch (err) {
+    return res.status(400).send({ message: err })
+  }
 }
 
-function signIn(req, res) {
-  User.findOne({
-    username: req.body.username,
-  }).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err })
-      return
-    }
+async function signIn(req, res) {
+  try {
+    const user = await User.findOne({
+      username: req.body.username,
+    }).exec()
 
     if (!user) {
-      return res.status(404).send({ message: 'User Not found.' })
+      throw 'User Not found.'
     }
 
     const passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
 
     if (!passwordIsValid) {
-      return res.status(401).send({ message: 'Invalid Password!' })
+      throw 'Invalid Password!'
     }
 
     const token = jwt.sign({ id: user.id }, config.secret, {
-      expiresIn: 86400, // 24 hours
+      expiresIn: 60 * 60 * 24 * 7, // 24 hours
     })
 
     req.session.token = token
 
+    const { username, email } = user
+
     res.status(200).send({
-      id: user._id,
-      username: user.username,
-      email: user.email,
+      data: {
+        username,
+        email,
+      },
     })
-  })
+  } catch (err) {
+    return res.status(400).send({ message: err })
+  }
 }
 
 async function signOut(req, res) {
