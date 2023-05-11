@@ -28,11 +28,12 @@ async function getAllResult(req, res) {
 
     results.current = records.map(
       ({
-        exerciseId: { name, imageUrl, level, _id },
+        exerciseId: { name, imageUrl, level, _id: exerciseId },
         poses: rawPoses,
         time,
         created,
         point,
+        _id,
       }) => {
         const poses = rawPoses.map(
           ({ poseId: { name, imageUrl, _id }, point }) => ({
@@ -46,6 +47,7 @@ async function getAllResult(req, res) {
           name,
           imageUrl,
           level,
+          exerciseId,
           id: _id,
           time,
           point,
@@ -77,4 +79,56 @@ async function addResult(req, res) {
   }
 }
 
-module.exports = { getAllResult, addResult }
+async function getResult(req, res) {
+  try {
+    const id = req.params.id
+    const userId = req.userId
+    if (!id) throw 'Missing id'
+    const result = await Result.findOne({ userId, _id: id })
+      .populate({
+        path: 'exerciseId',
+        select: ['name', 'imageUrl', 'level', '_id'],
+      })
+      .populate({
+        path: 'poses.poseId',
+        select: ['name', 'imageUrl', '_id'],
+      })
+      .exec()
+
+    if (!result) throw `Can't find result`
+
+    const {
+      exerciseId: { name, imageUrl, level, _id: exerciseId },
+      poses: rawPoses,
+      time,
+      created,
+      point,
+      _id,
+    } = result
+
+    const poses = rawPoses.map(
+      ({ poseId: { name, imageUrl, _id }, point }) => ({
+        name,
+        imageUrl,
+        id: _id,
+        point,
+      })
+    )
+
+    return res.status(200).send({
+      name,
+      level,
+      id: _id,
+      poses,
+      exerciseId,
+      imageUrl,
+      time,
+      created,
+      point,
+    })
+  } catch (err) {
+    return res.status(500).send(err)
+  }
+}
+
+module.exports = { getAllResult, addResult, getResult }
