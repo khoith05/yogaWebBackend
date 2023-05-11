@@ -53,9 +53,9 @@ mongoose
 app.use(function (req, res, next) {
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   )
-  res.header('Set-Cookie', 'cross-site-cookie=whatever; SameSite=None; Secure')
+  res.header('Access-Control-Allow-Origin', frontendUrl)
   next()
 })
 app.use(bodyParser.json())

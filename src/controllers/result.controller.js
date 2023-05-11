@@ -1,4 +1,6 @@
 const { Result } = require('../models')
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
 
 async function getAllResult(req, res) {
   const page = req.query.page ? parseInt(req.query.page) : 1
@@ -10,9 +12,12 @@ async function getAllResult(req, res) {
   const results = {}
 
   try {
-    const noRecords = await Result.countDocuments().exec()
+    const noRecords = await Result.countDocuments({
+      userId: new ObjectId(userId),
+    }).exec()
+
     results.numberOfPages = Math.ceil(noRecords / limit)
-    const records = await Result.find({ userId })
+    const records = await Result.find({ userId: new ObjectId(userId) })
       .sort('-created')
       .skip(startIndex)
       .limit(limit)
@@ -84,7 +89,10 @@ async function getResult(req, res) {
     const id = req.params.id
     const userId = req.userId
     if (!id) throw 'Missing id'
-    const result = await Result.findOne({ userId, _id: id })
+    const result = await Result.findOne({
+      userId: ObjectId(userId),
+      _id: ObjectId(id),
+    })
       .populate({
         path: 'exerciseId',
         select: ['name', 'imageUrl', 'level', '_id'],

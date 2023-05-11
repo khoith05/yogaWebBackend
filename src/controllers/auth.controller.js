@@ -16,13 +16,11 @@ async function signUp(req, res) {
     if (newUser) {
       const { username, email } = newUser
 
-      const token = jwt.sign({ id: user.id }, config.secret, {
+      const token = jwt.sign({ id: newUser._id }, config.secret, {
         expiresIn: 60 * 60 * 24 * 7, // 24 hours
       })
 
-      req.session.token = token
-
-      return res.status(200).send({ data: { username, email } })
+      return res.status(200).send({ data: { username, email, token } })
     }
     throw 'Some thing went wrong'
   } catch (err) {
@@ -46,11 +44,9 @@ async function signIn(req, res) {
       throw 'Invalid Password!'
     }
 
-    const token = jwt.sign({ id: user.id }, config.secret, {
+    const token = jwt.sign({ id: user._id }, config.secret, {
       expiresIn: 60 * 60 * 24 * 7, // 24 hours
     })
-
-    req.session.token = token
 
     const { username, email } = user
 
@@ -58,6 +54,7 @@ async function signIn(req, res) {
       data: {
         username,
         email,
+        token,
       },
     })
   } catch (err) {
@@ -67,7 +64,6 @@ async function signIn(req, res) {
 
 async function signOut(req, res) {
   try {
-    req.session = null
     return res.status(200).send({ message: "You've been signed out!" })
   } catch (err) {
     this.next(err)
