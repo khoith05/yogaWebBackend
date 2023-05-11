@@ -12,18 +12,48 @@ async function getAllResult(req, res) {
   try {
     const noRecords = await Result.countDocuments().exec()
     results.numberOfPages = Math.ceil(noRecords / limit)
-    results.current = await Result.find({ userId })
+    const records = await Result.find({ userId })
+      .sort('-created')
       .limit(limit)
       .skip(startIndex)
       .populate({
         path: 'exerciseId',
-        select: ['name', 'imageUrl', 'level'],
+        select: ['name', 'imageUrl', 'level', '_id'],
       })
       .populate({
         path: 'poses.poseId',
-        select: ['name', 'imageUrl'],
+        select: ['name', 'imageUrl', '_id'],
       })
       .exec()
+
+    results.current = records.map(
+      ({
+        exerciseId: { name, imageUrl, level, _id },
+        poses: rawPoses,
+        time,
+        created,
+        point,
+      }) => {
+        const poses = rawPoses.map(
+          ({ poseId: { name, imageUrl, _id }, point }) => ({
+            name,
+            imageUrl,
+            id: _id,
+            point,
+          })
+        )
+        return {
+          name,
+          imageUrl,
+          level,
+          id: _id,
+          time,
+          point,
+          created,
+          poses,
+        }
+      }
+    )
 
     return res.status(200).send(results)
   } catch (err) {
