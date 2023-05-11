@@ -3,8 +3,8 @@ const cors = require('cors')
 const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+require('dotenv').config()
 
-const dbConfig = require('./src/config/db.config')
 const authRouter = require('./src/routes/auth.routes')
 const userRouter = require('./src/routes/user.routes')
 const exerciseRouter = require('./src/routes/exercise.routes')
@@ -12,9 +12,13 @@ const resultRouter = require('./src/routes/result.routes')
 
 const app = express()
 
+const frontendUrl =
+  process.env.NODE_ENV === 'production'
+    ? process.env.FRONT_END_URL_PRODUCTION
+    : process.env.FRONT_END_URL
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: frontendUrl,
     credentials: true,
   })
 )
@@ -32,9 +36,10 @@ app.use(
     httpOnly: true,
   })
 )
+const mongoUri = process.env.MONGO_URI
 
 mongoose
-  .connect(`${dbConfig.url}/${dbConfig.DB}`)
+  .connect(mongoUri)
   .then(() => {
     console.log('Successfully connect to MongoDB.')
   })
@@ -66,5 +71,5 @@ app.use('/api/result', resultRouter)
 // eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`)
+  console.log(`Server is running on port ${PORT}.${process.env.NODE_ENV}`)
 })
