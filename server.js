@@ -50,6 +50,7 @@ app.use(function (req, res, next) {
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept'
   )
+  res.header('Set-Cookie', 'cross-site-cookie=whatever; SameSite=None; Secure')
   next()
 })
 app.use(bodyParser.json())
