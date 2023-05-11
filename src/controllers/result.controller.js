@@ -14,8 +14,8 @@ async function getAllResult(req, res) {
     results.numberOfPages = Math.ceil(noRecords / limit)
     const records = await Result.find({ userId })
       .sort('-created')
-      .limit(limit)
       .skip(startIndex)
+      .limit(limit)
       .populate({
         path: 'exerciseId',
         select: ['name', 'imageUrl', 'level', '_id'],
