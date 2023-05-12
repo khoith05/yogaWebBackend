@@ -90,8 +90,8 @@ async function getResult(req, res) {
     const userId = req.userId
     if (!id) throw 'Missing id'
     const result = await Result.findOne({
-      userId: ObjectId(userId),
-      _id: ObjectId(id),
+      userId: new ObjectId(userId),
+      _id: new ObjectId(id),
     })
       .populate({
         path: 'exerciseId',
